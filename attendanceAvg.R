@@ -6,9 +6,9 @@ kaggle <- fread('./Data/CFBeattendanceCSV.csv')
 kaggle
 
 teams <- c('Northwestern','Wisconsin', 'Illinois', 'Penn State', 'Indiana', 'Michigan State', 'Nebraska', 'Rutgers')
-teams2 <- c('Wisconsin')
+
 for(i in teams){
-sub<- kaggle[team == i]
+sub<- kaggle[Team == i]
 year <- sub$Year
 team <- kaggle$Team
 
