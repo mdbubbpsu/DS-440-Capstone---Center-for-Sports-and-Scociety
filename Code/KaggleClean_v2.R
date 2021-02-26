@@ -30,8 +30,6 @@ big10$Win <-ifelse(big10$Result == "W", 1, 0)
 big10$Loss <-ifelse(big10$Result == "L", 1, 0)
 
 
-
-
 ######################################################
 #Sample of how to generate all rows of model ready data by team
 ######################################################
@@ -42,3 +40,6 @@ Stats <- as.data.frame(big10 %>%
   group_by(Year, Team) %>%
   summarize(Win = sum(Win), Loss = sum(Loss), PF = sum(Points_For), PA = sum(Points_Against), PD = sum(Points_For - Points_Against),
   AvgPF = mean(Points_For), AvgPA = mean(Points_Against), Attendance = mean(Attendance)))
+
+
+fwrite(Stats, "./Data/model0data.csv")
