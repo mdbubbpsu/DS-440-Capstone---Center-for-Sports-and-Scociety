@@ -35,53 +35,10 @@ big10$Loss <-ifelse(big10$Result == "L", 1, 0)
 ######################################################
 #Sample of how to generate all rows of model ready data by team
 ######################################################
+big10
 
-#Focus on Indiana
-IU<-big10[big10$Team=="Indiana"]
 
-#Wins
-Win <- IU %>%
-  mutate(date = Year) %>%
-  group_by(date) %>%
-  summarize(x = sum(Win))
-
-#Losses
-Loss <- IU %>%
-  mutate(date = Year) %>%
-  group_by(date) %>%
-  summarize(x = sum(Loss))
-
-PF <- IU %>%
-  mutate(date = Year) %>%
-  group_by(date) %>%
-  summarize(x = sum(Points_For))
-
-PA <- IU %>%
-  mutate(date = Year) %>%
-  group_by(date) %>%
-  summarize(x = sum(Points_Against))
-
-PD <- IU %>%
-  mutate(date = Year) %>%
-  group_by(date) %>%
-  summarize(x = sum(Points_For - Points_Against))
-
-AvgPPG <- IU %>%
-  mutate(date = Year) %>%
-  group_by(date) %>%
-  summarize(x = mean(Points_For))
-
-AvgPA <- IU %>%
-  mutate(date = Year) %>%
-  group_by(date) %>%
-  summarize(x = mean(Points_Against))
-
-Attendance <- IU %>%
-  mutate(date = Year) %>%
-  group_by(date) %>%
-  summarize(x = mean(Attendance))
-
-IU_MRD <- data.frame(year <- c(2000:2018), Wins <- Win$x, Losses <- Loss$x, PointsFor <- PF$x, PointsAgainst <- PA$x,
-                     PointDifferential <- PD$x, AvgPPG <- AvgPPG$x, AvgPA <- AvgPA$x, AvgAttendance <- Attendance$x)
-new_names <- c('Year', 'Wins', 'Losses', 'PointsFor', 'PointsAgainst', 'PointDifferential', 'AvgPPG', 'AvgPA', 'AvgAttendance')
-names(IU_MRD) <- new_names
+Stats <- as.data.frame(big10 %>%
+  group_by(Year, Team) %>%
+  summarize(Win = sum(Win), Loss = sum(Loss), PF = sum(Points_For), PA = sum(Points_Against), PD = sum(Points_For - Points_Against),
+  AvgPF = mean(Points_For), AvgPA = mean(Points_Against), Attendance = mean(Attendance)))
