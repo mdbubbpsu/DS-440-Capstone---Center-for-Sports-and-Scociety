@@ -2,10 +2,13 @@ library(data.table)
 library(caret)
 library(ggpubr)
 library(Metrics)
+library(ggplot2)
 
 #Read in dataset
 data_big10<-fread("./Data/model0_data.csv")
+data_big10$Conf <- "BIG10"
 data_sec <- fread("./Data/model0data_sec.csv")
+data_sec$Conf <- "SEC"
 data <- rbind(data_big10, data_sec)
 
 
@@ -45,3 +48,16 @@ for (i in 1:nrow(results)) {
 
 #Write out data
 #fwrite(results, "./Data/model0results.csv")
+
+results <- data.frame(results)
+results$Conference <- NA
+results[1:20,]$Conference <- "BIG10"
+results[21:32,]$Conference <- "SEC"
+
+ggplot(data = results, aes(x = Actual, y = Predicted, color = Conference)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = F, aes(group = 1)) +
+  labs(title = "Attendance- Actual vs. Predicted",
+       x = "Actual Attendance",
+       y = "Predicted Attendance")
+
