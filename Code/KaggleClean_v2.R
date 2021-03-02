@@ -43,3 +43,30 @@ Stats <- as.data.frame(big10 %>%
 
 
 fwrite(Stats, "./Data/model0data.csv")
+
+#SEC
+
+#Subset data to look at just SEC games
+sec<-kaggle[Conference == "SEC"]
+
+
+#Split up result column into multiple columns
+sec$Result<-gsub("OT","",sec$Result)
+sec$Result<-gsub("–","",sec$Result)
+sec<-separate(sec, Result, c("Result","Points"), sep = "[ ]")
+sec<-transform(sec, Points = as.numeric(Points))
+sec<-separate(sec, Points, c("Points_For","Points_Against"), sep = 2)
+
+#Transform points for and against into numeric types
+sec<-transform(sec, Points_For = as.numeric(Points_For))
+sec<-transform(sec, Points_Against = as.numeric(Points_Against))
+
+sec$Win <-ifelse(sec$Result == "W", 1, 0)
+sec$Loss <-ifelse(sec$Result == "L", 1, 0)
+
+Stats_sec <- as.data.frame(sec %>%
+                         group_by(Year, Team) %>%
+                         summarize(Win = sum(Win), Loss = sum(Loss), PF = sum(Points_For), PA = sum(Points_Against), PD = sum(Points_For - Points_Against),
+                                   AvgPF = mean(Points_For), AvgPA = mean(Points_Against), Attendance = mean(Attendance)))
+
+fwrite(Stats_sec, "./Data/model0data_sec.csv")

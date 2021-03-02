@@ -4,7 +4,9 @@ library(ggpubr)
 library(Metrics)
 
 #Read in dataset
-data<-fread("./Data/model0_data.csv")
+data_big10<-fread("./Data/model0_data.csv")
+data_sec <- fread("./Data/model0data_sec.csv")
+data <- rbind(data_big10, data_sec)
 
 
 #Set seed for randomization
