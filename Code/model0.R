@@ -38,7 +38,7 @@ results$Actual<-y_test
 results$Predicted<-Att
 
 for (i in 1:nrow(results)) {
-  results$RMSE <- rmse(results$Actual[i], results$Predicted[i])
+  results$RMSE[i] <- rmse(results$Actual[i], results$Predicted[i])
 }
 
 #Write out data
