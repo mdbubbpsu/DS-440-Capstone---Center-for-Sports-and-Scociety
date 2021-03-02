@@ -7,40 +7,27 @@ library(janitor)
 #how i am doing this- not very automated and very annoying
 #1. run this to create 2020 year
 
-url <- read_html("https://www.espn.com/college-football/fpi/_/season/2020/group/5")
-url
+years <- c(2020:2005)
 
-tables <- html_nodes(url, "table")
-tables
+master_table <- data.table('Team' = NA, 'W-L' = NA, 'FPI' = NA, 'RK' = NA, 'TREND' = NA, 'PROJ' = NA, 'WINOUT' = NA, '6WIN' = NA, 'DIV' = NA, 'CONF' = NA, 'PLAYOFF' = NA, 'NC' = NA, 'WINNC' = NA, 'Year' = NA)
 
-table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
-str(table1)
-table1 <- as.data.frame(table1)
-table1$Year <- 2020
-table1 %>% row_to_names(row_number = 1)
-#table1 <- table1[-c(1),]
+for(i in years){
+  url <- read_html(paste0("https://www.espn.com/college-football/fpi/_/season/", i, "/group/5"))
+  url
+  
+  tables <- html_nodes(url, "table")
+  tables
+  
+  table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
+  str(table1)
+  table1 <- as.data.frame(table1)
+  table1$Year <- i
+  table1 <- table1[2:nrow(table1),]
+  
+  master_table <- rbind(master_table, table1, use.names = F)
+}
 
-master_table <- table1
-
-#run this chunk changing the year in url and the year column down from 2019-2005
-
-url <- read_html("https://www.espn.com/college-football/fpi/_/season/2005/group/5")
-url
-
-tables <- html_nodes(url, "table")
-tables
-
-table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
-str(table1)
-table1 <- as.data.frame(table1)
-table1$Year <- 2005
-#table1 %>% row_to_names(row_number = 1)
-table1 <- table1[-c(1),]
-master_table <- rbind(master_table, table1)
-
-master_table <- master_table %>% row_to_names(row_number = 1)
-str(master_table)
-#down to here
+master_table <- data.frame(master_table)
 
 
 #run this to get the necessary columns
