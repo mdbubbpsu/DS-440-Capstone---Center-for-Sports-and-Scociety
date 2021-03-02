@@ -11,6 +11,9 @@ data_sec <- fread("./Data/model0data_sec.csv")
 data_sec$Conf <- "SEC"
 data <- rbind(data_big10, data_sec)
 
+str(data)
+data$Year <- as.factor(data$Year)
+
 
 #Set seed for randomization
 set.seed(123) 
@@ -25,6 +28,7 @@ test <- data[-trainIndex,] #testing data (25% of data)
 #Hold out attendance from test set 
 y_test<-test$Attendance
 test$Attendance<-NULL
+
 
 #create regression model using lm for variables mentioned below
 model1<- lm(Attendance ~ Year+ PF + PA + PD + AvgPF + AvgPA + W + L + FPI + RK, data = train)
