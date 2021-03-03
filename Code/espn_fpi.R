@@ -132,7 +132,7 @@ fwrite(master_tablepac12, "./Data/espn_pac12.csv")
 master_tableacc <- data.table('Team' = NA, 'W-L' = NA, 'FPI' = NA, 'RK' = NA, 'TREND' = NA, 'PROJ' = NA, 'WINOUT' = NA, '6WIN' = NA, 'DIV' = NA, 'CONF' = NA, 'PLAYOFF' = NA, 'NC' = NA, 'WINNC' = NA, 'Year' = NA)
 
 for(i in years){
-  url <- read_html(paste0("https://www.espn.com/college-football/fpi/_/season/", i, "/group/9"))
+  url <- read_html(paste0("https://www.espn.com/college-football/fpi/_/season/", i, "/group/1"))
   url
   
   tables <- html_nodes(url, "table")
