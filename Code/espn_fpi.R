@@ -4,12 +4,11 @@ library(rvest)
 library(tidyverse)
 library(janitor)
 
-#how i am doing this- not very automated and very annoying
-#1. run this to create 2020 year
-
 years <- c(2020:2005)
 
-master_table <- data.table('Team' = NA, 'W-L' = NA, 'FPI' = NA, 'RK' = NA, 'TREND' = NA, 'PROJ' = NA, 'WINOUT' = NA, '6WIN' = NA, 'DIV' = NA, 'CONF' = NA, 'PLAYOFF' = NA, 'NC' = NA, 'WINNC' = NA, 'Year' = NA)
+#big 10
+
+master_tableb10 <- data.table('Team' = NA, 'W-L' = NA, 'FPI' = NA, 'RK' = NA, 'TREND' = NA, 'PROJ' = NA, 'WINOUT' = NA, '6WIN' = NA, 'DIV' = NA, 'CONF' = NA, 'PLAYOFF' = NA, 'NC' = NA, 'WINNC' = NA, 'Year' = NA)
 
 for(i in years){
   url <- read_html(paste0("https://www.espn.com/college-football/fpi/_/season/", i, "/group/5"))
@@ -24,57 +23,138 @@ for(i in years){
   table1$Year <- i
   table1 <- table1[2:nrow(table1),]
   
-  master_table <- rbind(master_table, table1, use.names = F)
+  master_tableb10 <- rbind(master_tableb10, table1, use.names = F)
 }
 
-master_table <- data.frame(master_table)
+master_tableb10 <- data.frame(master_tableb10)
 
 
 #run this to get the necessary columns
 master_cols <- c(1,2,3,4,14)
-master_table <- master_table[master_cols]
-names(master_table)[5]<-paste("Year")
-str(master_table)
+master_tableb10 <- master_tableb10[master_cols]
+names(master_tableb10)[5]<-paste("Year")
+str(master_tableb10)
 
+fwrite(master_tableb10, "./Data/espn_big10.csv")
 
 #SEC
+master_tablesec <- data.table('Team' = NA, 'W-L' = NA, 'FPI' = NA, 'RK' = NA, 'TREND' = NA, 'PROJ' = NA, 'WINOUT' = NA, '6WIN' = NA, 'DIV' = NA, 'CONF' = NA, 'PLAYOFF' = NA, 'NC' = NA, 'WINNC' = NA, 'Year' = NA)
 
-url <- read_html("https://www.espn.com/college-football/fpi/_/season/2020/group/8")
-url
+for(i in years){
+  url <- read_html(paste0("https://www.espn.com/college-football/fpi/_/season/", i, "/group/8"))
+  url
+  
+  tables <- html_nodes(url, "table")
+  tables
+  
+  table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
+  str(table1)
+  table1 <- as.data.frame(table1)
+  table1$Year <- i
+  table1 <- table1[2:nrow(table1),]
+  
+  master_tablesec <- rbind(master_tablesec, table1, use.names = F)
+}
 
-tables <- html_nodes(url, "table")
-tables
-
-table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
-str(table1)
-table1 <- as.data.frame(table1)
-table1$Year <- 2020
-table1 %>% row_to_names(row_number = 1)
-#table1 <- table1[-c(1),]
-
-master_table_sec <- table1
-
-url <- read_html("https://www.espn.com/college-football/fpi/_/season/2005/group/8")
-url
-
-tables <- html_nodes(url, "table")
-tables
-
-table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
-str(table1)
-table1 <- as.data.frame(table1)
-table1$Year <- 2005
-#table1 %>% row_to_names(row_number = 1)
-table1 <- table1[-c(1),]
-master_table_sec <- rbind(master_table_sec, table1)
+master_tablesec <- data.frame(master_tablesec)
 
 
-master_table_sec <- master_table_sec %>% row_to_names(row_number = 1)
-
-
+#run this to get the necessary columns
 master_cols <- c(1,2,3,4,14)
-master_table_sec <- master_table_sec[master_cols]
-names(master_table_sec)[5]<-paste("Year")
-str(master_table_sec)
+master_tablesec <- master_tablesec[master_cols]
+names(master_tablesec)[5]<-paste("Year")
+str(master_tablesec)
 
-master_table_sec['Year'] <- c(NA, head(master_table_sec['Year'], dim(master_table_sec)[1] - 1)[[1]])
+fwrite(master_tablesec, "./Data/espn_sec.csv")
+
+#big 12
+master_tablebig12 <- data.table('Team' = NA, 'W-L' = NA, 'FPI' = NA, 'RK' = NA, 'TREND' = NA, 'PROJ' = NA, 'WINOUT' = NA, '6WIN' = NA, 'DIV' = NA, 'CONF' = NA, 'PLAYOFF' = NA, 'NC' = NA, 'WINNC' = NA, 'Year' = NA)
+
+for(i in years){
+  url <- read_html(paste0("https://www.espn.com/college-football/fpi/_/season/", i, "/group/4"))
+  url
+  
+  tables <- html_nodes(url, "table")
+  tables
+  
+  table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
+  str(table1)
+  table1 <- as.data.frame(table1)
+  table1$Year <- i
+  table1 <- table1[2:nrow(table1),]
+  
+  master_tablebig12 <- rbind(master_tablebig12, table1, use.names = F)
+}
+
+master_tablebig12 <- data.frame(master_tablebig12)
+
+
+#run this to get the necessary columns
+master_cols <- c(1,2,3,4,14)
+master_tablebig12 <- master_tablebig12[master_cols]
+names(master_tablebig12)[5]<-paste("Year")
+str(master_tablebig12)
+
+fwrite(master_tablebig12, "./Data/espn_big12.csv")
+
+#pac12
+master_tablepac12 <- data.table('Team' = NA, 'W-L' = NA, 'FPI' = NA, 'RK' = NA, 'TREND' = NA, 'PROJ' = NA, 'WINOUT' = NA, '6WIN' = NA, 'DIV' = NA, 'CONF' = NA, 'PLAYOFF' = NA, 'NC' = NA, 'WINNC' = NA, 'Year' = NA)
+
+for(i in years){
+  url <- read_html(paste0("https://www.espn.com/college-football/fpi/_/season/", i, "/group/9"))
+  url
+  
+  tables <- html_nodes(url, "table")
+  tables
+  
+  table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
+  str(table1)
+  table1 <- as.data.frame(table1)
+  table1$Year <- i
+  table1 <- table1[2:nrow(table1),]
+  
+  master_tablepac12 <- rbind(master_tablepac12, table1, use.names = F)
+}
+
+master_tablepac12 <- data.frame(master_tablepac12)
+
+
+#run this to get the necessary columns
+master_cols <- c(1,2,3,4,14)
+master_tablepac12 <- master_tablepac12[master_cols]
+names(master_tablepac12)[5]<-paste("Year")
+str(master_tablepac12)
+
+fwrite(master_tablepac12, "./Data/espn_pac12.csv")
+
+
+#acc
+master_tableacc <- data.table('Team' = NA, 'W-L' = NA, 'FPI' = NA, 'RK' = NA, 'TREND' = NA, 'PROJ' = NA, 'WINOUT' = NA, '6WIN' = NA, 'DIV' = NA, 'CONF' = NA, 'PLAYOFF' = NA, 'NC' = NA, 'WINNC' = NA, 'Year' = NA)
+
+for(i in years){
+  url <- read_html(paste0("https://www.espn.com/college-football/fpi/_/season/", i, "/group/9"))
+  url
+  
+  tables <- html_nodes(url, "table")
+  tables
+  
+  table1 <- url %>% html_nodes("table") %>% html_table(fill = T) 
+  str(table1)
+  table1 <- as.data.frame(table1)
+  table1$Year <- i
+  table1 <- table1[2:nrow(table1),]
+  
+  master_tableacc <- rbind(master_tableacc, table1, use.names = F)
+}
+
+master_tableacc <- data.frame(master_tableacc)
+
+
+#run this to get the necessary columns
+master_cols <- c(1,2,3,4,14)
+master_tableacc <- master_tableacc[master_cols]
+names(master_tableacc)[5]<-paste("Year")
+str(master_tableacc)
+
+fwrite(master_tableacc, "./Data/espn_acc.csv")
+
