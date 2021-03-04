@@ -94,9 +94,9 @@ ross_stats
 ross_stats$Year <- as.factor(ross_stats$Year)
 ross_stats <- ross_stats %>% separate('W.L', c("W", "L"))
 
+ross_stats$W <- as.integer(ross_stats$W)
+ross_stats$L <- as.integer(ross_stats$L)
 
-#Set seed for randomization
-set.seed(123) 
 
 #creating index so data can be split into train and test
 trainIndex <- createDataPartition(ross_stats$Attendance,p=0.75,list=FALSE)
@@ -111,7 +111,7 @@ test$Attendance<-NULL
 
 
 #create regression model using lm for variables mentioned below
-model1<- lm(Attendance ~ W + L + Year, data = train)
+model1<- lm(Attendance ~ W+L+FPI+PF+PA+AvgPF+AvgPA, data = train)
 model<-summary(model1)
 model$sigma
 model$residuals
