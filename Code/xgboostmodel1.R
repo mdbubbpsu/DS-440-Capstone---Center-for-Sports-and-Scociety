@@ -6,6 +6,7 @@ library(Metrics)
 library(ggplot2)
 library(xgboost)
 library(tidyr)
+library(DiagrammeR)
 
 #Read in dataset
 data_big10<-fread("./Data/espn_big10.csv")
@@ -134,7 +135,7 @@ param <- list(  objective           = "reg:linear",
                 booster             = "gbtree",
                 eval_metric         = "rmse",
                 eta                 = .01,
-                max_depth           = 5,
+                max_depth           = 15,
                 min_child_weight    = 10,
                 subsample           = .99,
                 colsample_bytree    = .99,
@@ -148,7 +149,7 @@ XGB_cv<-xgb.cv(params=param,nrounds=10000,nfold=5,missing=NA,data=dtrain,print_e
 watchlist <- list(train = dtrain)
 
 #Train the model
-XGB_model<-xgb.train(params=param,nrounds= 2945,missing=NA,data=dtrain,watchlist=watchlist,
+XGB_model<-xgb.train(params=param,nrounds= 3299,missing=NA,data=dtrain,watchlist=watchlist,
                      print_every_n=1,nthread=4)
 
 #Create Predictions
@@ -164,3 +165,6 @@ test$Error <- lapply(test$Attendance, FUN = RMSE, test)
 cols<-XGB_model[["feature_names"]]
 importance <- xgb.importance(feature_names = cols, model = XGB_model)
 xgb.plot.importance(importance_matrix = importance, top_n = 50)
+
+
+xgb.plot.tree(model = XGB_model, trees =0)
