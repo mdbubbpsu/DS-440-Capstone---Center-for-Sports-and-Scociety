@@ -151,6 +151,9 @@ bestLam <- gl_model$lambda.min
 
 glM <- glmnet(trainX, as.double(unlist(trainY)), alpha = 1)
 
+
+
+
 plot_glmnet(glM)
 
 pred <- predict(glM, s=bestLam, newx = testX)
