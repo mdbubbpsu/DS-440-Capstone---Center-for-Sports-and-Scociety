@@ -137,6 +137,7 @@ trainY <- train[,'Attendance']
 
 testX <- test[, c('testFactorAtt','W', 'L', 'FPI', 'Average Stadium Capacity','PD')]
 
+
 team<- test$Team
 year <- test$Year
 testY <- test[,'Attendance']
