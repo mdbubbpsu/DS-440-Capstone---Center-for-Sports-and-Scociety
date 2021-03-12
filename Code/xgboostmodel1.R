@@ -145,6 +145,7 @@ param <- list(  objective           = "reg:linear",
 #Cross Validation
 XGB_cv<-xgb.cv(params=param,nrounds=10000,nfold=5,missing=NA,data=dtrain,print_every_n=1,nthread=4, 
                early_stopping_rounds=25)
+
 #removed test = dtest and put after the cross validation (potential bug fix)
 watchlist <- list(train = dtrain)
 
