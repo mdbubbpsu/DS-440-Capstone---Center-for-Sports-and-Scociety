@@ -113,8 +113,21 @@ ross_stats$L<- gsub("[^0-9.]","",ross_stats$L)
 #ross_stats$L <- as.integer(ross_stats$L)
 ross_stats <- na.omit(ross_stats)
 
+ross_stats[, c('W', 'L', 'FPI', 'RK', 'PF', 'PA', 'PD', 'AvgPF', 'AvgPA')] <- lapply(ross_stats[,c('W', 'L', 'FPI', 'RK', 'PF', 'PA', 'PD', 'AvgPF', 'AvgPA')], as.numeric)
+# Standarize numeric columns
+ross_stats$W <- scale(ross_stats$W)
+ross_stats$L <- scale(ross_stats$L)
+ross_stats$FPI <- scale(ross_stats$FPI)
+ross_stats$RK <- scale(ross_stats$RK)
+ross_stats$PF <- scale(ross_stats$PF)
+ross_stats$PA <- scale(ross_stats$PA)
+ross_stats$PD <- scale(ross_stats$PD)
+ross_stats$AvgPF <- scale(ross_stats$AvgPF)
+ross_stats$AvgPA <- scale(ross_stats$AvgPA)
+
 
 trainIndex <- createDataPartition(ross_stats$Attendance,p=0.80,list=FALSE)
+
 
 #splitting data into training/testing data using the trainIndex object
 
@@ -152,23 +165,26 @@ bestLam <- gl_model$lambda.min
 
 glM <- glmnet(trainX, as.double(unlist(trainY)), alpha = 1)
 
-
-
-
 plot_glmnet(glM)
 
+coeef <- predict(glM, s=bestLam, newx = testX, type = "coefficients")
 pred <- predict(glM, s=bestLam, newx = testX)
-
 results <- cbind(team, year,  pred, testY)
 results$pred <-results$'1'
 results$actual <- results$Attendance
 results$Attendance <-  NULL
 results$'1' <- NULL
 results <- as.data.frame(results)
+results$RMSE<- 0
+
+testY <- as.double(unlist(testY))
+
+
 
 for (i in 1:nrow(results)) {
   results$pred[i]
   results$actual[i]
-  results$RMSE[i] <- RMSE(results$pred[i], results$actual[i])
+  results$RMSE[i] <- rmse_vec(as.vector(pred[i]), as.vector(testY[i]))
 }
-
+mean(results$RMSE)
+coeef
