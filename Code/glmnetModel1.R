@@ -104,10 +104,10 @@ ross_stats
 #ross_stats$Year <- as.factor(ross_stats$Year)
 #ross_stats <- ross_stats %>% separate('W.L', c("W", "L"))
 
-ross_stats$W <-substr(ross_stats$W.L, 1,gregexpr(pattern = "-", train$W.L)[[1]])
+ross_stats$W <-substr(ross_stats$W.L, 1,gregexpr(pattern = "-", ross_stats$W.L))
 ross_stats$W<- gsub("[^0-9.]","",ross_stats$W) 
 
-ross_stats$L <-substr(ross_stats$W.L, gregexpr(pattern = "-", train$W.L)[[1]] +1, nchar(ross_stats$W.L))
+ross_stats$L <-substr(ross_stats$W.L, gregexpr(pattern = "-", ross_stats$W.L)[[1]], nchar(ross_stats$W.L))
 ross_stats$L<- gsub("[^0-9.]","",ross_stats$L) 
 
 #ross_stats$L <- as.integer(ross_stats$L)
