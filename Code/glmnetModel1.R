@@ -158,13 +158,13 @@ testY <- test[,'Attendance']
 trainX <- data.matrix(trainX)
 testX <- data.matrix(testX)
 
-gl_model<-cv.glmnet(trainX, as.double(unlist(trainY)), alpha = 1)
+gl_model<-cv.glmnet(trainX, as.double(unlist(trainY)), alpha = 0)
 
 
 
 bestLam <- gl_model$lambda.min
 
-glM <- glmnet(trainX, as.double(unlist(trainY)), alpha = 1)
+glM <- glmnet(trainX, as.double(unlist(trainY)), alpha = 0)
 
 plot_glmnet(glM)
 
@@ -189,3 +189,7 @@ for (i in 1:nrow(results)) {
 }
 mean(results$RMSE)
 coeef
+sumSquares <- sum((results$actual - mean(results$actual))^2)
+sumSqaureError <- sum((results$pred - results$actual)^2)
+rsq <- 1 - sumSqaureError / sumSquares
+rsq
