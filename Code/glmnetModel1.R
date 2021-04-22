@@ -7,29 +7,36 @@ library(dplyr)
 library(plotmo)
 library(yardstick)
 library(glmnet)
+library(corrplot)
+library(Hmisc)
+library(mlbench)
+
+################################################################################
+# TWO MAIN FILES IN THIS REPOSITORY: featureEngineering.R and glmnetModel.R
+# all the others were data preprocesessing
+################################################################################
+
 #Read in dataset
 
 master_table <- fread("./Data/master_table.csv")
-
+test <- fread("./Data/NAIVETEST.csv")
+master_table$Conference <- as.numeric(as.factor(master_table$Conference))
 #splitting data into training/testing data using the trainIndex object
-trainIndex <- createDataPartition(master_table$Attendance,p=0.80,list=FALSE)
-train <- master_table[trainIndex,] #training data (75% of data)
-test <- master_table[-trainIndex,] #testing data (25% of data)
-
+#trainIndex <- createDataPartition(master_table$Attendance,p=0.80,list=FALSE)
+train <- master_table #training data (75% of data)
+#test <- master_table[-trainIndex,] #testing data (25% of data)
 # Clean up train/test
 train <- as.data.table(train)
-train$trainFactorAtt <- as.numeric(as.factor(train$Team))
-test$testFactorAtt <- as.numeric(as.factor(test$Team))
-train$Group.1 <- NULL
-test$Group.1 <- NULL
-setnames(train, "Stadium Capacity", "Average Stadium Capacity")
-setnames(test, "Stadium Capacity", "Average Stadium Capacity")
+train$teamAsFactor <- as.numeric(as.factor(train$Team))
+test$teamAsFactor <- as.numeric(as.factor(test$Team))
 
+setnames(train, "capacity", "Stadium Capacity")
+setnames(test, "capacity", "Stadium Capacity")
 
 #Split train/test X/y on the features we want and the label
-trainX <- train[, c('trainFactorAtt','W', 'L', 'FPI','Average Stadium Capacity', 'PD')]
+trainX <- train[, c('teamAsFactor','W', 'L', 'FPI','Stadium Capacity','PD')]
 trainY <- train[,'Attendance']
-testX <- test[, c('testFactorAtt','W', 'L', 'FPI', 'Average Stadium Capacity','PD')]
+testX <- test[, c('teamAsFactor','W', 'L', 'FPI', 'Stadium Capacity', 'PD')]
 testY <- test[,'Attendance']
 
 
@@ -69,6 +76,7 @@ for (i in 1:nrow(results)) {
   results$RMSE[i] <- rmse_vec(as.vector(pred[i]), as.vector(testY[i]))
 }
 
+test$FabricatedPredAtt <- results$pred
 
 #Inspect model
 mean(results$RMSE)
@@ -76,4 +84,52 @@ coeef
 sumSquares <- sum((results$actual - mean(results$actual))^2)
 sumSqaureError <- sum((results$pred - results$actual)^2)
 rsq <- 1 - sumSqaureError / sumSquares
+
+
+# Compare before and after attendance
+statusQuo <- aggregate(test$Attendance, by= list(Team = test$Team), FUN=sum)
+Fabricated <-aggregate(test$FabricatedPredAtt, by= list(Team = test$Team), FUN=sum)
+
+teamCount <- as.data.table(count(test,Team))
+Fabricated<- merge(Fabricated,teamCount , by = 'Team')
+Fabricated$new <- Fabricated$x / Fabricated$n
+statusQuo<- merge(statusQuo,teamCount , by = 'Team')
+statusQuo$new <- statusQuo$x / statusQuo$n
+
+
+
+statusQuo$AverageAttPerYear <- statusQuo$new
+statusQuo$x <- NULL
+statusQuo$new <- NULL
+statusQuo$numberOfYears <- statusQuo$n
+statusQuo$n <- NULL
+
+Fabricated$AverageAttPerYear <- Fabricated$new
+Fabricated$x <- NULL
+Fabricated$new <- NULL
+Fabricated$numberOfYears <- statusQuo$n
+Fabricated$n <- NULL
+Fabricated$percentCapacity <- NULL
+Fabricated$percentChange <- NULL
+
+Fabricated$differenceFromStatusQuo <-  Fabricated$AverageAttPerYear - statusQuo$AverageAttPerYear 
+
+for (i in 1 : range(nrow(Fabricated))[1]){
+  statusQuo$percentCapacity[i] <- (statusQuo$AverageAttPerYear[i] / mean(test$`Stadium Capacity`[test$Team==statusQuo$Team[i] ])) * 100
+  Fabricated$percentCapacity[i] <- (Fabricated$AverageAttPerYear[i] / mean(test$`Stadium Capacity`[test$Team==Fabricated$Team[i] ])) * 100
+  Fabricated$percentChange[i] <-Fabricated$percentCapacity[i] -  statusQuo$percentCapacity[i]
+}
+################################################
+statusQuo$numberOfYears <- NULL
+Fabricated$numberOfYears <- NULL
+################################################
+
+percentChange<- sum(Fabricated$percentChange)
+statusQuo
+Fabricated
 rsq
+
+percentChange
+
+
+
